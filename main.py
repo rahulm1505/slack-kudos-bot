@@ -38,7 +38,9 @@ def handle_message_events(body, say):
     user = event.get("user", "")
     text = event.get("text", "")
     channel = event.get("channel", "")
-    
+
+    print("🔵 Incoming Slack Event:", event)  # Debugging Log
+
     # Ignore bot messages
     if "bot_id" in event:
         print("🤖 Bot message detected. Ignoring...")
@@ -47,9 +49,13 @@ def handle_message_events(body, say):
     # Check if the message mentions ANY user
     if "<@" in text:  # Slack mentions are formatted like "<@U08BJNRPKDK>"
         print(f"✅ Detected a mention in message: {text}")
+        
         if analyze_message(text):
+            print(f"🔥 Message passed sentiment analysis: {text}")
             award_kudos(user)
             say(f"🎉 Kudos! <@{user}> has received recognition! 🚀")
+        else:
+            print(f"❌ Message did NOT pass sentiment analysis: {text}")
     else:
         print("👀 No mention detected, ignoring message.")
 
