@@ -68,8 +68,11 @@ def leaderboard():
 @flask_app.route("/slack/events", methods=["POST"])
 def slack_events():
     data = request.json
+    print("🔵 Received Slack Event:", data)  # ✅ Debugging Log
+
     if "challenge" in data:
         return jsonify({"challenge": data["challenge"]})  # ✅ Respond to Slack verification
+
     return jsonify({"status": "ok"}), 200  # ✅ Regular event processing
 
 # Function to run Flask server
