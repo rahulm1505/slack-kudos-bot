@@ -44,18 +44,14 @@ def handle_message_events(body, say):
         print("🤖 Bot message detected. Ignoring...")
         return
 
-    # Ensure the message contains a mention of the bot
-    bot_user_id = os.getenv("BOT_USER_ID")  # Retrieve bot's user ID from env
-    if bot_user_id and f"<@{bot_user_id}>" not in text:
-        print("👀 Message does not mention the bot. Ignoring...")
-        return
-
-    # Process the message if it's from a user
-    print(f"✅ Processing message from user {user}: {text}")
-
-    if analyze_message(text):
-        award_kudos(user)
-        say(f"🎉 Kudos! <@{user}> has received recognition! 🚀")
+    # Check if the message mentions ANY user
+    if "<@" in text:  # Slack mentions are formatted like "<@U08BJNRPKDK>"
+        print(f"✅ Detected a mention in message: {text}")
+        if analyze_message(text):
+            award_kudos(user)
+            say(f"🎉 Kudos! <@{user}> has received recognition! 🚀")
+    else:
+        print("👀 No mention detected, ignoring message.")
 
 # Function to award kudos points
 def award_kudos(user):
