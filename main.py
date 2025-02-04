@@ -46,11 +46,17 @@ def handle_message_events(body, say):
         print("🤖 Bot message detected. Ignoring...")
         return
 
+    print(f"👀 Checking message from {user}: {text}")
+
     # Check if the message mentions ANY user
     if "<@" in text:  # Slack mentions are formatted like "<@U08BJNRPKDK>"
         print(f"✅ Detected a mention in message: {text}")
         
-        if analyze_message(text):
+        # Check if sentiment analysis passes
+        is_positive = analyze_message(text)
+        print(f"🧠 Sentiment Analysis Result: {is_positive}")
+
+        if is_positive:
             print(f"🔥 Message passed sentiment analysis: {text}")
             award_kudos(user)
             say(f"🎉 Kudos! <@{user}> has received recognition! 🚀")
