@@ -34,9 +34,24 @@ def analyze_message(text):
 # Handle message events
 @app.event("message")
 def handle_message_events(body, say):
-    text = body["event"].get("text", "")
-    user = body["event"].get("user", "")
-    channel = body["event"].get("channel", "")
+    event = body.get("event", {})
+    user = event.get("user", "")
+    text = event.get("text", "")
+    channel = event.get("channel", "")
+    
+    # Ignore bot messages
+    if "bot_id" in event:
+        print("🤖 Bot message detected. Ignoring...")
+        return
+
+    # Ensure the message contains a mention of the bot
+    bot_user_id = os.getenv("BOT_USER_ID")  # Retrieve bot's user ID from env
+    if bot_user_id and f"<@{bot_user_id}>" not in text:
+        print("👀 Message does not mention the bot. Ignoring...")
+        return
+
+    # Process the message if it's from a user
+    print(f"✅ Processing message from user {user}: {text}")
 
     if analyze_message(text):
         award_kudos(user)
