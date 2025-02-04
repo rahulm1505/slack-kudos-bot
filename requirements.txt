@@ -1,0 +1,5 @@
+slack-bolt
+flask
+openai
+psycopg2-binary
+python-dotenv
