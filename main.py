@@ -20,7 +20,19 @@ app = App(token=SLACK_BOT_TOKEN)
 
 # Connect to PostgreSQL database
 def get_db_connection():
-    return psycopg2.connect(DATABASE_URL, sslmode='require')
+    try:
+        print("🔌 Connecting to Database...")
+        conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+        cur = conn.cursor()
+        cur.execute("SELECT 1;")  # Simple test query
+        result = cur.fetchone()
+        cur.close()
+        conn.close()
+        print(f"✅ Database connection successful! Test Query Result: {result}")
+        return conn
+    except Exception as e:
+        print("❌ Database connection failed:", e)
+        return None  # Return None if connection fails
 
 # Analyze message sentiment using OpenAI
 def analyze_message(text):
