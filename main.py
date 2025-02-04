@@ -50,7 +50,7 @@ def award_kudos(user):
     cur.close()
     conn.close()
 
-# Flask app to expose leaderboard API
+# Flask app to expose leaderboard API and handle Slack Challenge
 flask_app = Flask(__name__)
 
 @flask_app.route("/leaderboard", methods=["GET"])
@@ -63,7 +63,15 @@ def leaderboard():
     conn.close()
     return jsonify({"leaderboard": leaderboard_data})
 
-# Start Slack bot
+# Handle Slack URL verification
+@flask_app.route("/slack/events", methods=["POST"])
+def slack_events():
+    data = request.json
+    if "challenge" in data:
+        return jsonify({"challenge": data["challenge"]})  # ✅ Respond to Slack verification
+    return jsonify({"status": "ok"}), 200  # ✅ Regular event processing
+
+# Start Slack bot and Flask app
 if __name__ == "__main__":
     SocketModeHandler(app, SLACK_APP_TOKEN).start()
-    flask_app.run(host="0.0.0.0", port=5000)
+    flask_app.run(host="0.0.0.0", port=3000)
