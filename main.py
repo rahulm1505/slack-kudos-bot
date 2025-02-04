@@ -4,6 +4,7 @@ import psycopg2
 from slack_bolt import App
 from slack_bolt.adapter.socket_mode import SocketModeHandler
 from flask import Flask, request, jsonify
+import threading
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -39,7 +40,7 @@ def handle_message_events(body, say):
 
     if analyze_message(text):
         award_kudos(user)
-        say(f"🎉 Kudos! @{user} has received recognition! 🚀")
+        say(f"🎉 Kudos! <@{user}> has received recognition! 🚀")
 
 # Function to award kudos points
 def award_kudos(user):
@@ -71,7 +72,11 @@ def slack_events():
         return jsonify({"challenge": data["challenge"]})  # ✅ Respond to Slack verification
     return jsonify({"status": "ok"}), 200  # ✅ Regular event processing
 
-# Start Slack bot and Flask app
-if __name__ == "__main__":
-    SocketModeHandler(app, SLACK_APP_TOKEN).start()
+# Function to run Flask server
+def run_flask():
     flask_app.run(host="0.0.0.0", port=3000)
+
+# Start Slack bot and Flask server in parallel
+if __name__ == "__main__":
+    threading.Thread(target=run_flask).start()  # ✅ Run Flask in a separate thread
+    SocketModeHandler(app, SLACK_APP_TOKEN).start()  # ✅ Keep Slack bot running
